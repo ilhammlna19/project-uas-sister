@@ -1,18 +1,43 @@
-penjelasan requirements:
+Penjelasan Requirements
 Flask
-Framework web Python yang ringan dan mudah digunakan untuk membuat aplikasi web, REST API, dan backend sederhana.
 
-Flask-SocketIO
-Ekstensi Flask untuk menambahkan fitur komunikasi real-time (websocket) seperti chat, notifikasi, dan update data secara langsung antara server dan client.
+Framework utama untuk membuat aplikasi web Python.
+Menyediakan routing, template, session, dan integrasi dengan berbagai library lain.
+Flask-Session
 
-gevent
-Library untuk concurrency/asynchronous di Python, digunakan agar Flask-SocketIO bisa menangani banyak koneksi secara efisien dan real-time.
-
+Library untuk mengelola session (penyimpanan data login user) di Flask.
+Mendukung penyimpanan session di file, Redis, dll.
 Flask-SQLAlchemy
-Ekstensi Flask untuk integrasi dengan database menggunakan SQLAlchemy ORM, sehingga pengelolaan database (seperti SQLite, MySQL, PostgreSQL) menjadi lebih mudah dan terstruktur.
 
+ORM (Object Relational Mapper) untuk mengelola database dengan model Python.
+Memudahkan query dan manajemen database (di sini: SQLite).
+Flask-SocketIO
+
+Menambahkan fitur real-time (websocket) pada Flask.
+Digunakan untuk chat real-time antar user.
+python-socketio
+
+Library client/server untuk komunikasi Socket.IO di Python.
+Digunakan oleh Flask-SocketIO untuk komunikasi real-time.
+python-engineio
+
+Library pendukung untuk komunikasi low-level pada Socket.IO.
+Dibutuhkan oleh Flask-SocketIO dan python-socketio.
+gevent
+
+Library untuk concurrency/asynchronous berbasis greenlet (mirip thread ringan).
+Digunakan sebagai async worker untuk Flask-SocketIO (agar real-time chat berjalan lancar).
+eventlet
+
+Alternatif lain untuk async worker (mirip gevent).
+Bisa digunakan jika tidak memakai gevent.
 pytz
-Library untuk mengatur dan mengkonversi timezone pada waktu dan tanggal di Python, misal untuk menampilkan waktu sesuai zona Asia/Jakarta.
 
+Library untuk timezone-aware datetime di Python.
+Membantu menampilkan waktu chat sesuai zona waktu Indonesia.
 Werkzeug
-Toolkit WSGI yang digunakan Flask untuk menangani request/response HTTP, serta menyediakan utilitas seperti secure file upload.
+
+Library WSGI utility, digunakan oleh Flask untuk routing, request, response, dsb.
+Versi tertentu diperlukan agar kompatibel dengan Flask dan Flask-SocketIO.
+Kesimpulan:
+Semua library di atas saling mendukung untuk membangun aplikasi chat real-time berbasis Flask, dengan fitur session login, database, dan komunikasi real-time yang stabil.
