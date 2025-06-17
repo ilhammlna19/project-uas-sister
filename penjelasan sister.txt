@@ -6,7 +6,8 @@ Penjelasan Sistem Terdistribusi pada Project Ini
 1. Redundansi Server (Backup Server)
 Anda memiliki dua file server:
 server.py berjalan di port 5000
-server_backup.py berjalan di port 5001
+server_backup.py berjalan di port 5000
+(berjalan di port nya saja tetapi beda ip)
 Keduanya menggunakan kode dan database yang sama (chat.db), serta folder upload yang sama.
 Jika server utama (server.py) mati, Anda bisa langsung mengakses server backup (server_backup.py) tanpa kehilangan data, karena backup server menggunakan database dan folder upload yang sama.
 2. Akses Multi-Platform
