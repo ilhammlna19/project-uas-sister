@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Track History Record</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <style>
+      body {
+        background: #f7f7fa;
+        font-family: "Segoe UI", Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 700px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+        padding: 32px 28px 24px 28px;
+      }
+      h2 {
+        margin-top: 0;
+        font-size: 2rem;
+        letter-spacing: 1px;
+        color: #222;
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 18px;
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+      .back-link:hover {
+        color: #0056b3;
+        text-decoration: underline;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fafbfc;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      }
+      th,
+      td {
+        padding: 12px 10px;
+        text-align: left;
+      }
+      th {
+        background: #f0f4fa;
+        color: #333;
+        font-weight: 600;
+        border-bottom: 2px solid #e0e6ed;
+      }
+      tr:nth-child(even) {
+        background: #f7fafd;
+      }
+      tr:hover {
+        background: #eaf3ff;
+        transition: background 0.2s;
+      }
+      .file-link {
+        color: #28a745;
+        font-weight: 500;
+        text-decoration: none;
+      }
+      .file-link:hover {
+        text-decoration: underline;
+        color: #218838;
+      }
+      .msg-text {
+        color: #444;
+      }
+      @media (max-width: 600px) {
+        .container {
+          padding: 12px 4px;
+        }
+        table,
+        th,
+        td {
+          font-size: 0.95em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Track History Record</h2>
+      <a href="{{ url_for('index') }}" class="back-link"
+        >&larr; Kembali ke Chat</a
+      >
+      <table>
+        <thead>
+          <tr>
+            <th>Waktu</th>
+            <th>Nama</th>
+            <th>Pesan / File</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for msg in messages %}
+          <tr>
+            <td>{{ msg.timestamp.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+            <td>{{ msg.username }}</td>
+            <td>
+              {% if 'Upload file:' in msg.content %} {% set filename =
+              msg.content.replace('Upload file: ', '').strip() %}
+              <a
+                href="{{ url_for('uploaded_file', filename=filename) }}"
+                target="_blank"
+                class="file-link"
+              >
+                <span>📁</span> {{ filename }}
+              </a>
+              {% else %}
+              <span class="msg-text">{{ msg.content }}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
