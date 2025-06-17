@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>SISTeR PRO APP++</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+      body {
+        background: #e3f2fa;
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+      }
+      .main-box {
+        max-width: 900px;
+        margin: 24px auto;
+        background: #f8fafc;
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+        min-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .header {
+        background: #2296b0;
+        color: #fff;
+        padding: 24px 32px;
+        display: flex;
+        align-items: center;
+        border-radius: 20px 20px 0 0;
+        gap: 18px;
+      }
+      .header img {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: #fff;
+        border: 3px solid #fff;
+        object-fit: contain;
+      }
+      .header-title {
+        font-size: 2rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        flex: 1;
+      }
+      .chat-area {
+        flex: 1;
+        background: #f7f9fc;
+        padding: 24px 32px;
+        overflow-y: auto;
+        min-height: 350px;
+      }
+      .user-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        vertical-align: middle;
+        margin-right: 6px;
+        background: #e0e7ef;
+        object-fit: cover;
+      }
+      .message {
+        margin-bottom: 10px;
+        font-size: 1.08em;
+        display: flex;
+        align-items: center;
+      }
+      .username {
+        font-weight: 600;
+        color: #2296b0;
+        margin-right: 2px;
+      }
+      .timestamp {
+        color: #888;
+        font-size: 0.92em;
+        margin-left: 8px;
+      }
+      .bottom-bar {
+        background: #f7f9fc;
+        padding: 18px 32px 24px 32px;
+        border-radius: 0 0 20px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .input-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 4px;
+      }
+      .input-row input[type="text"] {
+        flex: 1;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1.5px solid #b0c4d4;
+        font-size: 1em;
+        background: #f4f8fb;
+      }
+      .input-row button {
+        background: #2296b0;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0 18px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .input-row button:hover {
+        background: #197a8c;
+      }
+      .action-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .action-row input[type="file"] {
+        font-size: 1em;
+      }
+      .action-row button {
+        border: none;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .action-row .upload-btn {
+        background: #28a745;
+        color: #fff;
+      }
+      .action-row .upload-btn:hover {
+        background: #218838;
+      }
+      .action-row .clear-btn {
+        background: #dc3545;
+        color: #fff;
+      }
+      .action-row .clear-btn:hover {
+        background: #b71c1c;
+      }
+      @media (max-width: 700px) {
+        .main-box,
+        .chat-area,
+        .bottom-bar,
+        .header {
+          padding-left: 10px;
+          padding-right: 10px;
+        }
+        .header {
+          flex-direction: column;
+          gap: 8px;
+          align-items: flex-start;
+        }
+        .bottom-bar {
+          padding: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-box">
+      <audio
+        id="notif-audio"
+        src="{{ url_for('static', filename='notif.mp3') }}"
+      ></audio>
+      <div class="header">
+        <img
+          src="{{ url_for('static', filename='img/logoweb.png') }}"
+          alt="Logo"
+        />
+        <div class="header-title">SISTeR PRO APP<sup>++</sup></div>
+      </div>
+      <div class="chat-area" id="messages">
+        {% for msg in messages %}
+        <div class="message">
+          <img
+            src="{{ url_for('static', filename='img/profile.png') }}"
+            alt="user"
+            class="user-icon"
+          />
+          <span class="username">{{ msg.username }}</span>: {% if 'Upload file:'
+          in msg.content %} {% set filename = msg.content.replace('Upload file:
+          ', '').strip() %}
+          <a
+            href="{{ url_for('uploaded_file', filename=filename) }}"
+            target="_blank"
+            >{{ filename }}</a
+          >
+          {% else %}
+          <span class="content">{{ msg.content|safe }}</span>
+          {% endif %}
+          <span class="timestamp"
+            >{{ msg.timestamp.strftime('%d-%m-%Y %H:%M:%S') }} WIB</span
+          >
+        </div>
+        {% endfor %}
+      </div>
+      <div class="bottom-bar">
+        <div class="input-row">
+          <input
+            type="text"
+            id="username"
+            placeholder="nama"
+            autocomplete="off"
+          />
+          <form
+            id="chat-form"
+            style="display: flex; flex: 2; gap: 10px; width: 100%"
+          >
+            <input
+              type="text"
+              id="content"
+              placeholder="pesan"
+              autocomplete="off"
+              style="flex: 2"
+            />
+            <button type="submit">➤</button>
+          </form>
+        </div>
+        <div class="action-row">
+          <form
+            id="upload-form"
+            action="{{ url_for('upload_file') }}"
+            method="post"
+            enctype="multipart/form-data"
+            style="display: flex; gap: 8px; align-items: center"
+          >
+            <input type="hidden" name="username" id="upload-username" />
+            <input type="file" name="file" required />
+            <button type="submit" class="upload-btn">Upload File</button>
+          </form>
+          <form
+            action="{{ url_for('clear_history') }}"
+            method="post"
+            style="margin: 0"
+          >
+            <button
+              type="submit"
+              class="clear-btn"
+              onclick="return confirm('Yakin hapus semua history chat?')"
+            >
+              hapus history
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script>
+      const socket = io();
+
+      // Ambil elemen audio
+      const notifAudio = document.getElementById("notif-audio");
+
+      function playNotif() {
+        notifAudio.currentTime = 0;
+        notifAudio.play();
+      }
+
+      function scrollToBottom() {
+        const messages = document.getElementById("messages");
+        messages.scrollTop = messages.scrollHeight;
+      }
+
+      // Tampilkan pesan chat baru
+      socket.on("receive_message", function (data) {
+        const messages = document.getElementById("messages");
+        const div = document.createElement("div");
+        div.className = "message";
+        div.innerHTML = `<img src="{{ url_for('static', filename='img/profile.png') }}" alt="user" class="user-icon" /> <span class="username">${data.username}</span>: <span class="content">${data.content}</span> <span class="timestamp">${data.timestamp} WIB</span>`;
+        messages.appendChild(div);
+        scrollToBottom();
+        playNotif(); // mainkan sound
+      });
+
+      // Tampilkan file yang diupload secara realtime
+      socket.on("receive_file", function (data) {
+        const messages = document.getElementById("messages");
+        const div = document.createElement("div");
+        div.className = "message";
+        let fileLink = `<a href="${data.url}" target="_blank">${data.filename}</a>`;
+        div.innerHTML = `<img src="{{ url_for('static', filename='img/profile.png') }}" alt="user" class="user-icon" /> <span class="username">${data.username}</span>: <span class="content">Upload file: ${fileLink}</span> <span class="timestamp">${data.timestamp} WIB</span>`;
+        messages.appendChild(div);
+        scrollToBottom();
+        playNotif(); // mainkan sound
+      });
+
+      // Chat message submit
+      document
+        .getElementById("chat-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const username = document.getElementById("username").value.trim();
+          const content = document.getElementById("content").value.trim();
+          if (username && content) {
+            socket.emit("send_message", { username, content });
+            document.getElementById("content").value = "";
+            document.getElementById("content").focus();
+          }
+        });
+
+      // Sinkronkan username ke form upload setiap kali berubah
+      document
+        .getElementById("username")
+        .addEventListener("input", function () {
+          document.getElementById("upload-username").value = this.value;
+        });
+      // Inisialisasi saat load
+      document.getElementById("upload-username").value =
+        document.getElementById("username").value;
+
+      // Pastikan username ikut terkirim saat upload file
+      document
+        .getElementById("upload-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const username = document.getElementById("username").value;
+          const fileInput = this.querySelector('input[type="file"]');
+          const file = fileInput.files[0];
+          if (!file) return;
+
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("username", username);
+
+          fetch(this.action, {
+            method: "POST",
+            body: formData,
+          }).then((res) => {
+            if (res.ok) {
+              fileInput.value = ""; // reset file input
+            }
+          });
+        });
+
+      // Sinkron hapus history secara realtime
+      socket.on("clear_history", function () {
+        document.getElementById("messages").innerHTML = "";
+      });
+
+      // Scroll ke bawah saat load
+      scrollToBottom();
+    </script>
+  </body>
+</html>
