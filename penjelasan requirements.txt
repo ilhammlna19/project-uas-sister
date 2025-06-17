@@ -1,0 +1,18 @@
+penjelasan requirements:
+Flask
+Framework web Python yang ringan dan mudah digunakan untuk membuat aplikasi web, REST API, dan backend sederhana.
+
+Flask-SocketIO
+Ekstensi Flask untuk menambahkan fitur komunikasi real-time (websocket) seperti chat, notifikasi, dan update data secara langsung antara server dan client.
+
+gevent
+Library untuk concurrency/asynchronous di Python, digunakan agar Flask-SocketIO bisa menangani banyak koneksi secara efisien dan real-time.
+
+Flask-SQLAlchemy
+Ekstensi Flask untuk integrasi dengan database menggunakan SQLAlchemy ORM, sehingga pengelolaan database (seperti SQLite, MySQL, PostgreSQL) menjadi lebih mudah dan terstruktur.
+
+pytz
+Library untuk mengatur dan mengkonversi timezone pada waktu dan tanggal di Python, misal untuk menampilkan waktu sesuai zona Asia/Jakarta.
+
+Werkzeug
+Toolkit WSGI yang digunakan Flask untuk menangani request/response HTTP, serta menyediakan utilitas seperti secure file upload.

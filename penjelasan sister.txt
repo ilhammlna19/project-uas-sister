@@ -1,0 +1,65 @@
+ada project Anda, sistem terdistribusi diterapkan dengan cara menjalankan dua server Flask-SocketIO yang identik, yaitu:
+
+server.py (server utama, port 5000)
+server_backup.py (server backup, port 5001)
+Penjelasan Sistem Terdistribusi pada Project Ini
+1. Redundansi Server (Backup Server)
+Anda memiliki dua file server:
+server.py berjalan di port 5000
+server_backup.py berjalan di port 5001
+Keduanya menggunakan kode dan database yang sama (chat.db), serta folder upload yang sama.
+Jika server utama (server.py) mati, Anda bisa langsung mengakses server backup (server_backup.py) tanpa kehilangan data, karena backup server menggunakan database dan folder upload yang sama.
+2. Akses Multi-Platform
+Server dijalankan dengan host='0.0.0.0' (atau IP LAN), sehingga bisa diakses dari Windows, Ubuntu, macOS, dan perangkat lain dalam satu jaringan.
+Semua client yang terhubung ke jaringan dapat mengakses aplikasi melalui browser dengan alamat IP server dan port yang sesuai.
+3. Realisasi Realtime Sinkron
+Dengan Flask-SocketIO dan eventlet, setiap perubahan (chat atau upload file) langsung dikirim ke semua client yang terhubung secara realtime, tanpa perlu refresh browser.
+Semua client (di platform manapun) akan menerima update yang sama secara serempak.
+4. Distribusi Data
+Database (chat.db) dan folder upload digunakan bersama oleh kedua server.
+Tidak ada replikasi database otomatis, tetapi kedua server membaca dan menulis ke sumber data yang sama, sehingga data tetap konsisten selama kedua server mengakses file yang sama.
+Diagram Sederhana Sistem Terdistribusi Anda
+Kesimpulan
+Sistem terdistribusi di project ini berupa redundansi server (dua server identik) yang bisa diakses dari berbagai platform.
+Semua client di jaringan bisa terhubung ke salah satu server.
+Data tetap konsisten karena kedua server menggunakan database dan folder upload yang sama.
+Komunikasi antar client dan server berlangsung secara realtime menggunakan Socket.IO.
+Jika ingin sistem distribusi yang lebih canggih (misal: load balancing, database cluster, file sync otomatis antar server di lokasi berbeda), Anda perlu menambah komponen seperti Nginx, database server terdistribusi, atau cloud storage. Namun, untuk kebutuhan lokal/LAN, arsitektur Anda sudah cukup baik untuk high availability sederhana.
+
+
+//////////////////////////////////////////////////////////////////////////////
+Dua server (server utama dan server backup) bisa diakses di berbagai platform (Windows, Ubuntu, macOS, Android, dll) karena:
+
+Dijalankan di host 0.0.0.0 atau IP LAN
+Dengan pengaturan host='0.0.0.0', server menerima koneksi dari semua alamat IP di jaringan, bukan hanya dari localhost.
+Ini memungkinkan perangkat apa pun di jaringan yang sama untuk mengakses server melalui browser dengan alamat IP server dan port yang sesuai.
+
+Menggunakan protokol HTTP/Socket.IO
+Protokol ini didukung oleh semua browser modern di berbagai sistem operasi, sehingga tidak tergantung pada platform tertentu.
+
+Redudansi server
+Ada dua server yang berjalan (misal di port 5000 dan 5001). Jika salah satu server mati, client bisa langsung mengakses server backup tanpa perlu konfigurasi ulang, selama mereka tahu alamat IP dan port server backup.
+
+Tidak ada batasan platform
+Selama perangkat bisa terhubung ke jaringan dan membuka browser, mereka bisa mengakses aplikasi, baik dari Windows, Ubuntu, macOS, maupun perangkat mobile.
+
+
+berikut penjelasan isi file requirements.txt Anda:
+
+Flask
+Framework web Python yang ringan dan mudah digunakan untuk membuat aplikasi web.
+
+Flask-SocketIO
+Ekstensi Flask untuk mendukung komunikasi realtime (WebSocket) antara server dan client, misalnya untuk chat tanpa refresh.
+
+eventlet
+Library Python untuk concurrency/asynchronous, digunakan oleh Flask-SocketIO agar server bisa menangani banyak koneksi secara realtime dan efisien.
+
+Flask-SQLAlchemy
+Ekstensi Flask untuk integrasi dengan database menggunakan SQLAlchemy ORM, memudahkan pengelolaan database dengan model Python.
+
+Kesimpulan:
+File ini berisi daftar library yang dibutuhkan agar aplikasi chat Flask Anda bisa berjalan dengan fitur realtime dan database.
+
+Kesimpulan:
+Redudansi server membuat aplikasi tetap bisa diakses jika salah satu server down, dan pengaturan jaringan/server yang terbuka untuk semua IP membuatnya bisa diakses dari berbagai platform di jaringan yang sama.
