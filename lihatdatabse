@@ -1,0 +1,10 @@
+import sqlite3
+
+conn = sqlite3.connect('chat.db')
+cur = conn.cursor()
+
+print("Isi tabel message:")
+for row in cur.execute('SELECT * FROM message'):
+    print(row)
+
+conn.close()
